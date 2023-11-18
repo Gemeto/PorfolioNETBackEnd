@@ -1,6 +1,11 @@
 using PorfolioWeb.Services.Context;
 using PorfolioWeb.Models;
 using Microsoft.EntityFrameworkCore;
+using Azure;
+using Microsoft.AspNetCore.Http.HttpResults;
+using MySqlX.XDevAPI.Common;
+using System.Text.Json;
+using Azure.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +25,25 @@ app.MapGet("/", async (PortafolioContextService context) =>
     return JobExperience;
 });
 
-app.MapPost("/", async (PortafolioContextService context, JobExperience JobExperience) => {
-    context.JobExperiences.Add(JobExperience);
+app.MapGet("/JobExperience/{id}", async (int id, PortafolioContextService context) => 
+{
+    JobExperience? JobExperience = await context.JobExperiences.FirstOrDefaultAsync(x => x.Id == id);
+    return JobExperience;
+});
+
+app.MapPost("/", async (HttpRequest request, PortafolioContextService context) => {
+    var postData = request.Form.ToDictionary( x => x.Key.ToString(), x => x.Value);
+    Console.WriteLine(postData["id"]);
+    JobExperience? jobExperience = await context.JobExperiences.FirstOrDefaultAsync(x => x.Id == int.Parse(postData["id"].ToString()));
+    if(jobExperience==null){
+        return Results.NotFound();
+    }
+    jobExperience.Title = postData["title"];
+    jobExperience.Description = postData["description"];
+    context.Attach(jobExperience).State = EntityState.Modified;
     await context.SaveChangesAsync();
     _rebuildGitStaticPage();
+    return Results.Ok();
 });
 
 app.Run();
