@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
 
-namespace PorfolioWeb.Models;
+namespace PorfolioNETBackEnd.Models;
 
-public partial class WebUser
+public partial class User
 {
     public int Id { get; set; }
 
@@ -23,4 +24,16 @@ public partial class WebUser
 
     public virtual ICollection<JobExperience> JobExperiences { get; set; } = new List<JobExperience>();
 
+}
+
+public class UserValidator : AbstractValidator<User>
+{
+    public UserValidator()
+    {
+        RuleFor(x => x.Id).NotNull();
+        RuleFor(x => x.Name).NotNull();
+        RuleFor(x => x.Email).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty();
+
+    }
 }

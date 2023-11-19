@@ -267,3 +267,6 @@ C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\bin\Debug\net7.0\runt
 C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\obj\Debug\net7.0\PorfolioNETBackEnd.sourcelink.json
+C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\bin\Debug\net7.0\FluentValidation.dll
+C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\bin\Debug\net7.0\FluentValidation.AspNetCore.dll
+C:\Users\User\Desktop\PorfolioWorkspace\PorfolioNETBackEnd\bin\Debug\net7.0\FluentValidation.DependencyInjectionExtensions.dll

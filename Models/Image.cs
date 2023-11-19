@@ -1,6 +1,7 @@
-﻿using PorfolioWeb.Models.Interfaces;
+﻿using FluentValidation;
+using PorfolioNETBackEnd.Models.Interfaces;
 
-namespace PorfolioWeb.Models;
+namespace PorfolioNETBackEnd.Models;
 
 public partial class Image : IFileModel
 {
@@ -10,5 +11,16 @@ public partial class Image : IFileModel
 
     public virtual ICollection<JobExperience> JobExperiences { get; set; } = new List<JobExperience>();
 
-    public virtual ICollection<WebUser> Users { get; set; } = new List<WebUser>();
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }
+
+    public class ImageValidator : AbstractValidator<Image>
+{
+    public ImageValidator()
+    {
+        RuleFor(x => x.Id).NotNull();
+        RuleFor(x => x.Path).NotEmpty();
+
+    }
+}
+

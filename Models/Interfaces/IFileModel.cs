@@ -1,4 +1,4 @@
-﻿namespace PorfolioWeb.Models.Interfaces
+﻿namespace PorfolioNETBackEnd.Models.Interfaces
 {
     public interface IFileModel
     {

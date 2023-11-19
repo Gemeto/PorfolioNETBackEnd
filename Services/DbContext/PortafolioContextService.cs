@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PorfolioWeb.Models;
+using PorfolioNETBackEnd.Models;
 
-namespace PorfolioWeb.Services.Context;
+namespace PorfolioNETBackEnd.Services.Context;
 
 public partial class PortafolioContextService : DbContext
 {
@@ -18,13 +18,34 @@ public partial class PortafolioContextService : DbContext
 
     public virtual DbSet<JobExperience> JobExperiences { get; set; }
 
-    public virtual DbSet<WebUser> Users { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<Category> Categories { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseMySQL("Server=127.0.0.1;User ID=root;Password=rufo4321;Port=3306;Database=portafolio");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("category");
+
+            entity.HasIndex(e => e.ParentId, "parent_id");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("text")
+                .HasColumnName("name");
+            entity.Property(e => e.ParentId).HasColumnName("parent_id");
+
+            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
+                .HasForeignKey(d => d.ParentId)
+                .HasConstraintName("parent_id");
+        });
+
         modelBuilder.Entity<Image>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -42,6 +63,8 @@ public partial class PortafolioContextService : DbContext
 
             entity.ToTable("job_experience");
 
+            entity.HasIndex(e => e.CategoryId, "category_id");
+
             entity.HasIndex(e => e.ImageId, "image_id");
 
             entity.HasIndex(e => e.UserId, "user_id");
@@ -55,6 +78,7 @@ public partial class PortafolioContextService : DbContext
                 .HasMaxLength(256)
                 .HasColumnName("title");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
 
             entity.HasOne(d => d.Image).WithMany(p => p.JobExperiences)
                 .HasForeignKey(d => d.ImageId)
@@ -64,9 +88,14 @@ public partial class PortafolioContextService : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.JobExperiences)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("user_id");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.JobExperiences)
+                .HasForeignKey(d => d.ImageId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("cateogry_id");
         });
 
-        modelBuilder.Entity<WebUser>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 

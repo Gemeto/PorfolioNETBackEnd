@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace PorfolioWeb.Services
+namespace PorfolioNETBackEnd.Services
 {
     public class EncryptSHA256Service
     {

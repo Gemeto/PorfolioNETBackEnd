@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
 
-namespace PorfolioWeb.Models;
+namespace PorfolioNETBackEnd.Models;
 
 public class JobExperience
 {
     [Key]
     public int Id { get; set; }
+    
     [Required]
     public string Title { get; set; } = null!;
 
@@ -16,12 +18,25 @@ public class JobExperience
 
     [ForeignKey("Image")]
     public int? ImageId { get; set; }
-
     public virtual Image? Image { get; set; }
 
     [Required]
     [ForeignKey("User")]
     public int UserId { get; set; }
+    public virtual User? User { get; set; } = null!;
 
-    public virtual WebUser? User { get; set; } = null!;
+    [ForeignKey("Category")]
+    public int? CategoryId { get; set; }
+    public virtual Category? Category { get; set; }
+}
+
+public class JobExperienceValidator : AbstractValidator<JobExperience>
+{
+    public JobExperienceValidator()
+    {
+        RuleFor(x => x.Id).NotNull();
+        RuleFor(x => x.UserId).NotNull();
+        RuleFor(x => x.Title).NotEmpty();
+
+    }
 }
