@@ -69,6 +69,12 @@ app.MapGet("/Category/{id}", async (int id, PortafolioContextService context) =>
     Category? Category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
     return Category;
 });
+//Get category-job experiences by id
+app.MapGet("/Category/{id}/JobExperience", async (int id, PortafolioContextService context) => 
+{
+    IList<JobExperience>? jobExperiences = await context.JobExperiences.Where(x => x.CategoryId == id).ToArrayAsync();
+    return jobExperiences;
+});
 //Post new/edited category
 app.MapPost("/Category", async (HttpRequest request, PortafolioContextService context, IValidator<Category> validator) => {
     var postData = request.Form.ToDictionary( x => x.Key.ToString(), x => x.Value);
@@ -82,8 +88,8 @@ app.MapPost("/Category", async (HttpRequest request, PortafolioContextService co
         return Results.NotFound();
     }
     category.Name = postData["name"].ToString();
-    if(postData.ContainsKey("parentId")){
-           category.ParentId =int.Parse(postData["parentId"].ToString());
+    if(postData.ContainsKey("parentId") && !postData["parentId"].IsNullOrEmpty() && postData["parentId"] != ""){
+           category.ParentId = int.Parse(postData["parentId"].ToString());
     }
     var valid = await validator.ValidateAsync(category);
     if(valid.IsValid){
