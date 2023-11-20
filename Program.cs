@@ -7,8 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PortafolioContextService>(
-    options => options.UseMySQL(
-        builder.Configuration.GetConnectionString("MySql")??""));
+    options => options.UseMySQL(builder.Configuration.GetConnectionString("MySql")??""));
 builder.Services.AddScoped<IValidator<JobExperience>, JobExperienceValidator>();
 builder.Services.AddScoped<IValidator<Category>, CategoryValidator>();
 builder.Services.AddScoped<IValidator<Image>, ImageValidator>();
@@ -37,6 +36,7 @@ app.MapPost("/JobExperience", async (HttpRequest request, PortafolioContextServi
     JobExperience? jobExperience = null;
     if(!postData.ContainsKey("id")){
         jobExperience = new JobExperience();
+        jobExperience.UserId = 3;
     }else{
         jobExperience = await context.JobExperiences.FirstOrDefaultAsync(x => x.Id == int.Parse(postData["id"].ToString()));
     }
@@ -45,10 +45,16 @@ app.MapPost("/JobExperience", async (HttpRequest request, PortafolioContextServi
     }
     jobExperience.Title = postData["title"].ToString();
     jobExperience.Description = postData["description"].ToString();
-    jobExperience.CategoryId = postData.ContainsKey("categoryId") ? int.Parse(postData["categoryId"].ToString()) : null;
+    if(postData.ContainsKey("categoryId") && !postData["categoryId"].IsNullOrEmpty() && postData["categoryId"] != ""){
+        jobExperience.CategoryId = postData.ContainsKey("categoryId") ? int.Parse(postData["categoryId"].ToString()) : null;
+    }
     var valid = await validator.ValidateAsync(jobExperience);
     if(valid.IsValid){
-        context.Attach(jobExperience).State = EntityState.Modified;
+        if(postData.ContainsKey("id")){
+            context.Attach(jobExperience).State = EntityState.Modified;
+        }else{
+            context.Add(jobExperience);
+        }
         await context.SaveChangesAsync();
         _rebuildGitPage();
     } else {
